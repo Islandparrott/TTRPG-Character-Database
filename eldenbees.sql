@@ -23,3 +23,19 @@ CREATE TABLE `EquipmentRepo` (
   CONSTRAINT `Class_ibfk_1` FOREIGN KEY (`EID`) REFERENCES `Equipment` (`EID`),
 ) 
 
+DROP TABLE IF EXISTS `Feats`;
+CREATE TABLE `Feats` (
+  `Ft_Name` varchar(100) NOT NULL,
+  `FID`, int(11) NOT NULL,
+  `Description` varchar(350) DEFAULT NULL,
+  PRIMARY KEY (`FRID`),
+) 
+
+DROP TABLE IF EXISTS `FeatRepo`;
+CREATE TABLE `FeatRepo` (
+  `FRID`, int(11) AUTO_INCREMENT NOT NULL,
+  `FID`, int(11) NOT NULL,
+  PRIMARY KEY (`FRID`),
+  KEY `FID` (`FID`),
+  CONSTRAINT `Class_ibfk_1` FOREIGN KEY (`FID`) REFERENCES `Feat` (`FID`),
+) 

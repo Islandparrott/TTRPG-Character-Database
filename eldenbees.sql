@@ -73,8 +73,8 @@ CREATE TABLE `LanguageRepo` (
   CONSTRAINT `Class_ibfk_1` FOREIGN KEY (`LID`) REFERENCES `Languages` (`LID`),
 ) 
 
-DROP TABLE IF EXISTS `GivesProficiencies`;
-CREATE TABLE `GivesProficiencies` (
+DROP TABLE IF EXISTS `Proficiencies`;
+CREATE TABLE `Proficiencies` (
   `PRID` int(11) AUTO_INCREMENT NOT NULL,
   `School` boolean NOT NULL,
   `Acrobatics` boolean NOT NULL, 

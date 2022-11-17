@@ -9,8 +9,16 @@ CREATE TABLE `Account` (
 DROP TABLE IF EXISTS `Background`;
 CREATE TABLE `Background` (
   `Bckgrnd_Name` varchar(100) NOT NULL,
+  `ERID` int(11) DEFAULT NULL,
+  `FRID` int(11) DEFAULT NULL,
+  `LRID` int(11) DEFAULT NULL,
+  `PRID` int(11) DEFAULT NULL,
   `Description` varchar(350) DEFAULT NULL,
   PRIMARY KEY (`Bckgrnd_Name`)
+  CONSTRAINT `Campaign_ibfk_1` FOREIGN KEY (`ERID`) REFERENCES `Equipment` (`ERID`)
+  CONSTRAINT `Campaign_ibfk_2` FOREIGN KEY (`FRID`) REFERENCES `Feats` (`FRID`)
+  CONSTRAINT `Campaign_ibfk_3` FOREIGN KEY (`LRID`) REFERENCES `Languages` (`LRID`)
+  CONSTRAINT `Campaign_ibfk_4` FOREIGN KEY (`PRID`) REFERENCES `Proficiencies` (`PRID`)
 )
 
 DROP TABLE IF EXISTS `Campaign`;

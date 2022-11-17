@@ -6,6 +6,13 @@ CREATE TABLE `Account` (
   PRIMARY KEY (`Username`)
 ) 
 
+DROP TABLE IF EXISTS `Background`;
+CREATE TABLE `Background` (
+  `Bckgrnd_Name` varchar(100) NOT NULL,
+  `Description` varchar(350) DEFAULT NULL,
+  PRIMARY KEY (`Bckgrnd_Name`)
+)
+
 DROP TABLE IF EXISTS `Campaign`;
 CREATE TABLE `Campaign` (
   `Camp_ID` int(11) NOT NULL,
@@ -64,6 +71,29 @@ CREATE TABLE `LanguageRepo` (
   PRIMARY KEY (`LRID`),
   KEY `LID` (`LID`),
   CONSTRAINT `Class_ibfk_1` FOREIGN KEY (`LID`) REFERENCES `Languages` (`LID`),
+) 
+
+DROP TABLE IF EXISTS `GivesProficiencies`;
+CREATE TABLE `GivesProficiencies` (
+  `PRID` int(11) AUTO_INCREMENT NOT NULL,
+  `School` boolean NOT NULL,
+  `Acrobatics` boolean NOT NULL, 
+  `Animal Handling` boolean NOT NULL, 
+  `Athletics` boolean NOT NULL, 
+  `Deception` boolean NOT NULL, 
+  `Insight` boolean NOT NULL, 
+  `Intimidation` boolean NOT NULL, 
+  `Investigation` boolean NOT NULL, 
+  `Medicine` boolean NOT NULL, 
+  `Nature` boolean NOT NULL, 
+  `Perception` boolean NOT NULL, 
+  `Performance` boolean NOT NULL, 
+  `Persuasion` boolean NOT NULL, 
+  `Religion` boolean NOT NULL, 
+  `Sleight of Hand` boolean NOT NULL, 
+  `Stealth` boolean NOT NULL, 
+  `Survival` boolean NOT NULL
+  PRIMARY KEY (`PRID`)
 ) 
 
 DROP TABLE IF EXISTS `Spells`;

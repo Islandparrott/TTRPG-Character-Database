@@ -6,6 +6,16 @@ CREATE TABLE `Account` (
   PRIMARY KEY (`Username`)
 ) 
 
+DROP TABLE IF EXISTS `Campaign`;
+CREATE TABLE `Campaign` (
+  `Camp_ID` int(11) NOT NULL,
+  `Username` varchar(100) NOT NULL,
+  `Name` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`Camp_ID`),
+  KEY `Username` (`Username`),
+  CONSTRAINT `Campaign_ibfk_1` FOREIGN KEY (`Username`) REFERENCES `Account` (`Username`)
+)
+
 DROP TABLE IF EXISTS `Equipment`;
 CREATE TABLE `Equipment` (
   `Eqpmnt_Name` varchar(100) NOT NULL,

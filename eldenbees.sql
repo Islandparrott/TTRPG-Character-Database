@@ -39,3 +39,19 @@ CREATE TABLE `FeatRepo` (
   KEY `FID` (`FID`),
   CONSTRAINT `Class_ibfk_1` FOREIGN KEY (`FID`) REFERENCES `Feat` (`FID`),
 ) 
+
+DROP TABLE IF EXISTS `Languages`;
+CREATE TABLE `Languages` (
+  `Lang_Name` varchar(100) NOT NULL,
+  `LID`, int(11) NOT NULL,
+  PRIMARY KEY (`Lang_Name`)
+) 
+
+DROP TABLE IF EXISTS `LanguageRepo`;
+CREATE TABLE `LanguageRepo` (
+  `LRID`, int(11) AUTO_INCREMENT NOT NULL,
+  `LID`, int(11) NOT NULL,
+  PRIMARY KEY (`LRID`),
+  KEY `LID` (`LID`),
+  CONSTRAINT `Class_ibfk_1` FOREIGN KEY (`LID`) REFERENCES `Languages` (`LID`),
+) 

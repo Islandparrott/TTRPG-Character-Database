@@ -55,3 +55,21 @@ CREATE TABLE `LanguageRepo` (
   KEY `LID` (`LID`),
   CONSTRAINT `Class_ibfk_1` FOREIGN KEY (`LID`) REFERENCES `Languages` (`LID`),
 ) 
+
+DROP TABLE IF EXISTS `Spells`;
+CREATE TABLE `Spells` (
+  `Spell_Name` varchar(100) NOT NULL,
+  `School` varchar(100) NOT NULL,
+  `Level` int NOT NULL,
+  `Description` varchar(350) DEFAULT NULL,
+  PRIMARY KEY (`Spell_Name`)
+) 
+
+DROP TABLE IF EXISTS `SpellRepo`;
+CREATE TABLE `Spellrepo` (
+  `SPRID`, int(11) AUTO_INCREMENT NOT NULL,
+  `SPID`, int(11) NOT NULL,
+  PRIMARY KEY (`SPRID`),
+  KEY `SPID` (`SPID`),
+  CONSTRAINT `Class_ibfk_1` FOREIGN KEY (`SPID`) REFERENCES `Spells` (`SPID`),
+) 

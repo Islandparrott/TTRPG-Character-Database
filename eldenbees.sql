@@ -114,7 +114,7 @@ CREATE TABLE `Spells` (
 ) 
 
 DROP TABLE IF EXISTS `SpellRepo`;
-CREATE TABLE `Spellrepo` (
+CREATE TABLE `SpellRepo` (
   `SPRID`, int(11) AUTO_INCREMENT NOT NULL,
   `SPID`, int(11) NOT NULL,
   PRIMARY KEY (`SPRID`),

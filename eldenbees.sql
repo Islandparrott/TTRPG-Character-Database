@@ -22,7 +22,7 @@ CREATE TABLE `AbilityScoreIncrease` (
   `INT` int(2) DEFAULT NULL,
   `WIS` int(2) DEFAULT NULL,
   `CHA` int(2) DEFAULT NULL,
-  PRIMARY KEY (`ASIID`),
+  PRIMARY KEY (`ASIID`)
 )
 
 DROP TABLE IF EXISTS `Account`;
@@ -45,9 +45,9 @@ CREATE TABLE `Background` (
   KEY `FRID` (`FRID`),
   KEY `LRID` (`LRID`),
   KEY `PRID` (`PRID`),
-  CONSTRAINT `Background_ibfk_1` FOREIGN KEY (`ERID`) REFERENCES `EquipmentRepo` (`ERID`)
-  CONSTRAINT `Background_ibfk_2` FOREIGN KEY (`FRID`) REFERENCES `FeatRepo` (`FRID`)
-  CONSTRAINT `Background_ibfk_3` FOREIGN KEY (`LRID`) REFERENCES `LanguageRepo` (`LRID`)
+  CONSTRAINT `Background_ibfk_1` FOREIGN KEY (`ERID`) REFERENCES `EquipmentRepo` (`ERID`),
+  CONSTRAINT `Background_ibfk_2` FOREIGN KEY (`FRID`) REFERENCES `FeatRepo` (`FRID`),
+  CONSTRAINT `Background_ibfk_3` FOREIGN KEY (`LRID`) REFERENCES `LanguageRepo` (`LRID`),
   CONSTRAINT `Background_ibfk_4` FOREIGN KEY (`PRID`) REFERENCES `Proficiencies` (`PRID`)
 )
 
@@ -81,14 +81,14 @@ DROP TABLE IF EXISTS `Equipment`;
 CREATE TABLE `Equipment` (
   `Eqpmnt_Name` varchar(32) NOT NULL,
   `Description` varchar(500) DEFAULT NULL,
-  `EID` int NOT NULL AUTO_INCREMENT,
+  `EID` int(8) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`Eqpmnt_Name`)
 ) 
 
 DROP TABLE IF EXISTS `EquipmentRepo`;
 CREATE TABLE `EquipmentRepo` (
-  `ERID`, int(8) AUTO_INCREMENT NOT NULL,
-  `EID`, int(8) NOT NULL,
+  `ERID` int(8) AUTO_INCREMENT NOT NULL,
+  `EID` int(8) NOT NULL,
   PRIMARY KEY (`ERID`),
   KEY `EID` (`EID`),
   CONSTRAINT `Class_ibfk_1` FOREIGN KEY (`EID`) REFERENCES `Equipment` (`EID`)
@@ -97,15 +97,15 @@ CREATE TABLE `EquipmentRepo` (
 DROP TABLE IF EXISTS `Feats`;
 CREATE TABLE `Feats` (
   `FRID` varchar(8) NOT NULL,
-  `FID`, int(8) AUTO_INCREMENT NOT NULL,
+  `FID` int(8) AUTO_INCREMENT NOT NULL,
   `Description` varchar(512) DEFAULT NULL,
   PRIMARY KEY (`FRID`)
 ) 
 
 DROP TABLE IF EXISTS `FeatRepo`;
 CREATE TABLE `FeatRepo` (
-  `FRID`, int(8) AUTO_INCREMENT NOT NULL,
-  `FID`, int(8) NOT NULL,
+  `FRID` int(8) AUTO_INCREMENT NOT NULL,
+  `FID` int(8) NOT NULL,
   PRIMARY KEY (`FRID`),
   KEY `FID` (`FID`),
   CONSTRAINT `FeatRepo_ibfk_1` FOREIGN KEY (`FID`) REFERENCES `Feat` (`FID`)
@@ -114,14 +114,14 @@ CREATE TABLE `FeatRepo` (
 DROP TABLE IF EXISTS `Languages`;
 CREATE TABLE `Languages` (
   `Lang_Name` varchar(32) NOT NULL,
-  `LID`, int(8) AUTO_INCREMENT NOT NULL,
+  `LID` int(8) AUTO_INCREMENT NOT NULL,
   PRIMARY KEY (`Lang_Name`)
 ) 
 
 DROP TABLE IF EXISTS `LanguageRepo`;
 CREATE TABLE `LanguageRepo` (
-  `LRID`, int(8) AUTO_INCREMENT NOT NULL,
-  `LID`, int(8) NOT NULL,
+  `LRID` int(8) AUTO_INCREMENT NOT NULL,
+  `LID` int(8) NOT NULL,
   PRIMARY KEY (`LRID`),
   KEY `LID` (`LID`),
   CONSTRAINT `LanguageRepo_ibfk_1` FOREIGN KEY (`LID`) REFERENCES `Languages` (`LID`)
@@ -142,7 +142,7 @@ CREATE TABLE `PlayerCharacter` (
   `Char_ID` int(8) AUTO_INCREMENT NOT NULL,
   `Username` varchar(32) NOT NULL,
   `Bckgrnd_Name` varchar(32) NOT NULL,
-  `Camp_ID` int(8) NOT NULL,
+  `Camp_ID` int(8) DEFAULT NULL,
   `Race_Name` varchar(32) NOT NULL,
   `SubR_Name` varchar(32) NOT NULL,
   `ERID` int(8) DEFAULT NULL,
@@ -179,7 +179,7 @@ CREATE TABLE `PlayerCharacter` (
 DROP TABLE IF EXISTS `PlayerClass`;
 CREATE TABLE `PlayerClass` (
   `Char_ID` int(8) NOT NULL,
-  `Class_Name` varchar(32) NULL,
+  `Class_Name` varchar(32) NOT NULL,
   `SubC_Name` int(32) NOT NULL,
   `Level` int(2) NOT NULL,
   PRIMARY KEY (`Char_ID`),
@@ -213,7 +213,7 @@ CREATE TABLE `PlayerProf` (
   `Survival` boolean NOT NULL
   PRIMARY KEY (`Char_ID`),
   KEY `Char_ID` (`Char_ID`),
-  CONSTRAINT `PlayerProf_ibfk_1` FOREIGN KEY (`Char_ID`) REFERENCES `PlayerCharacter` (`Char_ID`),
+  CONSTRAINT `PlayerProf_ibfk_1` FOREIGN KEY (`Char_ID`) REFERENCES `PlayerCharacter` (`Char_ID`)
 ) 
 
 DROP TABLE IF EXISTS `Proficiencies`;
@@ -248,6 +248,7 @@ CREATE TABLE `Race` (
   `SPRID` varchar(8) NOT NULL,
   `Size` varchar(8) DEFAULT NULL,
   `Speed` int(8) DEFAULT NULL,
+  `Description` varchar(512) DEFAULT NULL,
   PRIMARY KEY (`Race_Name`),
   KEY `ASIID` (`ASIID`),
   KEY `FRID` (`FRID`),
@@ -262,7 +263,7 @@ CREATE TABLE `Race` (
 DROP TABLE IF EXISTS `Spells`;
 CREATE TABLE `Spells` (
   `SPRID` varchar(8) NOT NULL,
-  `SPID`, int(8) AUTO_INCREMENT NOT NULL,
+  `SPID` int(8) AUTO_INCREMENT NOT NULL,
   `School` varchar(32) NOT NULL,
   `Level` int(2) NOT NULL,
   `Description` varchar(512) DEFAULT NULL,
@@ -271,8 +272,8 @@ CREATE TABLE `Spells` (
 
 DROP TABLE IF EXISTS `SpellRepo`;
 CREATE TABLE `Spellrepo` (
-  `SPRID`, int(8) AUTO_INCREMENT NOT NULL,
-  `SPID`, int(8)  NOT NULL,
+  `SPRID` int(8) AUTO_INCREMENT NOT NULL,
+  `SPID` int(8)  NOT NULL,
   PRIMARY KEY (`SPRID`),
   KEY `SPID` (`SPID`),
   CONSTRAINT `SpellRepo_ibfk_1` FOREIGN KEY (`SPID`) REFERENCES `Spells` (`SPID`)
@@ -284,6 +285,7 @@ CREATE TABLE `SubClass` (
   `FRID` varchar(8) NOT NULL,
   `PRID` varchar(8) NOT NULL,
   `SPRID` varchar(8) NOT NULL,
+  `Description` varchar(512) DEFAULT NULL,
   PRIMARY KEY (`SubC_Name`),
   KEY `ASIID` (`ASIID`),
   KEY `FRID` (`FRID`),
@@ -301,6 +303,7 @@ CREATE TABLE `SubClass` (
   `FRID` varchar(8) NOT NULL,
   `PRID` varchar(8) NOT NULL,
   `SPRID` varchar(8) NOT NULL,
+  `Description` varchar(512) DEFAULT NULL,
   PRIMARY KEY (`SubC_Name`),
   KEY `FRID` (`FRID`),
   KEY `PRID` (`PRID`),

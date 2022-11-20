@@ -1,4 +1,3 @@
-
 DROP TABLE IF EXISTS `AbilityScores`;
 CREATE TABLE `AbilityScores` (
   `Char_ID` int(8) NOT NULL,
@@ -67,14 +66,17 @@ CREATE TABLE `Class` (
   `ERID` int(8) DEFAULT NULL,
   `FRID` int(8) DEFAULT NULL,
   `PRID` int(8) DEFAULT NULL,
+  `SAID` int(8) DEFAULT NULL,
   `Description` varchar(512) DEFAULT NULL,
   PRIMARY KEY (`Class_Name`),
   KEY `ERID` (`ERID`),
   KEY `FRID` (`FRID`),
   KEY `PRID` (`PRID`),
+  KEY `SAID` (`SAID`),
   CONSTRAINT `Background_ibfk_1` FOREIGN KEY (`ERID`) REFERENCES `EquipmentRepo` (`ERID`),
   CONSTRAINT `Background_ibfk_2` FOREIGN KEY (`FRID`) REFERENCES `FeatRepo` (`FRID`),
-  CONSTRAINT `Background_ibfk_4` FOREIGN KEY (`PRID`) REFERENCES `Proficiencies` (`PRID`)
+  CONSTRAINT `Background_ibfk_3` FOREIGN KEY (`PRID`) REFERENCES `Proficiencies` (`PRID`),
+  CONSTRAINT `Background_ibfk_4` FOREIGN KEY (`SAID`) REFERENCES `Saves` (`SAID`)
 )
 
 DROP TABLE IF EXISTS `Equipment`;
@@ -170,7 +172,7 @@ CREATE TABLE `PlayerCharacter` (
   CONSTRAINT `PlayerCharacter_ibfk_3` FOREIGN KEY (`Camp_ID`) REFERENCES `Campaign` (`Camp_ID`),
   CONSTRAINT `PlayerCharacter_ibfk_4` FOREIGN KEY (`Race_Name`) REFERENCES `Race` (`Race_Name`),
   CONSTRAINT `PlayerCharacter_ibfk_5` FOREIGN KEY (`SubR_Name`) REFERENCES `SubRace` (`SubR_Name`),
-  CONSTRAINT `PlayerCharacter_ibfk_8` FOREIGN KEY (`ERID`) REFERENCES `EquipmentRepo` (`ERID`),
+  CONSTRAINT `PlayerCharacter_ibfk_6` FOREIGN KEY (`ERID`) REFERENCES `EquipmentRepo` (`ERID`),
   CONSTRAINT `PlayerCharacter_ibfk_7` FOREIGN KEY (`FRID`) REFERENCES `FeatRepo` (`FRID`),
   CONSTRAINT `PlayerCharacter_ibfk_8` FOREIGN KEY (`LRID`) REFERENCES `LanguageRepo` (`LRID`),
   CONSTRAINT `PlayerCharacter_ibfk_9` FOREIGN KEY (`PRID`) REFERENCES `Proficiencies` (`PRID`)
@@ -260,16 +262,31 @@ CREATE TABLE `Race` (
   CONSTRAINT `Race_ibfk_4` FOREIGN KEY (`SPRID`) REFERENCES `SpellRepo` (`SPRID`)
 )
 
+DROP TABLE IF EXISTS `PlayerSaves`;
+CREATE TABLE `PlayerSaves` (
+  `Char_ID` int(8) NOT NULL,
+  `STR` boolean DEFAULT NULL,
+  `DEX` boolean DEFAULT NULL,
+  `CON` boolean DEFAULT NULL,
+  `INT` boolean DEFAULT NULL,
+  `WIS` boolean DEFAULT NULL,
+  `CHA` boolean DEFAULT NULL,
+  PRIMARY KEY (`SAID`),
+    PRIMARY KEY (`Char_ID`),
+  KEY `Char_ID` (`Char_ID`),
+  CONSTRAINT `PlayerSaves_ibfk_1` FOREIGN KEY (`Char_ID`) REFERENCES `PlayerCharacter` (`Char_ID`)
+)
+
 DROP TABLE IF EXISTS `Saves`;
 CREATE TABLE `Saves` (
-  `ASIID` int(8) AUTO_INCREMENT NOT NULL,
-  `STR` int(2) DEFAULT NULL,
-  `DEX` int(2) DEFAULT NULL,
-  `CON` int(2) DEFAULT NULL,
-  `INT` int(2) DEFAULT NULL,
-  `WIS` int(2) DEFAULT NULL,
-  `CHA` int(2) DEFAULT NULL,
-  PRIMARY KEY (`ASIID`)
+  `SAID` int(8) AUTO_INCREMENT NOT NULL,
+  `STR` boolean DEFAULT NULL,
+  `DEX` boolean DEFAULT NULL,
+  `CON` boolean DEFAULT NULL,W
+  `INT` boolean DEFAULT NULL,
+  `WIS` boolean DEFAULT NULL,
+  `CHA` boolean DEFAULT NULL,
+  PRIMARY KEY (`SAID`)
 )
 
 DROP TABLE IF EXISTS `Spells`;

@@ -4,7 +4,7 @@ CREATE TABLE `ASI` (
   `STR` int(2) DEFAULT NULL,
   `DEX` int(2) DEFAULT NULL,
   `CON` int(2) DEFAULT NULL,
-  `INTe` int(2) DEFAULT NULL,
+  `INT` int(2) DEFAULT NULL,
   `WIS` int(2) DEFAULT NULL,
   `CHA` int(2) DEFAULT NULL,
   PRIMARY KEY (`ASIID`)
@@ -30,6 +30,11 @@ DROP TABLE IF EXISTS `Equipment`;
 CREATE TABLE `Equipment` (
   EID int(8) AUTO_INCREMENT NOT NULL,
   `Eqpmnt_Name` varchar(32) NOT NULL,
+  `Type` varchar(32) DEFAULT NULL,
+  `Weight` varchar(32) DEFAULT NULL,
+  Attack varchar(32) DEFAULT NULL,
+  Damage varchar(32) DEFAULT NULL,
+  ACBonus varchar(32) DEFAULT NULL,
   `Description` varchar(512) DEFAULT NULL,
   PRIMARY KEY (EID)
 );
@@ -37,6 +42,7 @@ CREATE TABLE `Equipment` (
 DROP TABLE IF EXISTS `Feats`;
 CREATE TABLE `Feats` (
   `FID` int(8) AUTO_INCREMENT NOT NULL,
+  'Ft_Name' varchar(512) NOT NULL,
   `Description` varchar(512) DEFAULT NULL,
   PRIMARY KEY (`FID`)
 );
@@ -87,8 +93,13 @@ DROP TABLE IF EXISTS `Spells`;
 CREATE TABLE `Spells` (
   SPID int(8) AUTO_INCREMENT NOT NULL,
   `Spell_Name` varchar(32) NOT NULL,
-  `School` varchar(32) NOT NULL,
   `Level` int(2) NOT NULL,
+  `School` varchar(32) NOT NULL,
+  `Range` int(3) DEFAULT NULL,
+  Components varchar(3) DEFAULT NULL,
+  Duration varchar(32) DEFAULT NULL,
+  Attack varchar(32) DEFAULT NULL,
+  Damage varchar(32) DEFAULT NULL,
   `Description` varchar(512) DEFAULT NULL,
   PRIMARY KEY (SPID)
 );
@@ -178,6 +189,7 @@ CREATE TABLE `PlayerCharacter` (
   `PRID` int(8) DEFAULT NULL,
   `ArmorClass` int(2) DEFAULT NULL,
   `Biography` varchar(512) DEFAULT NULL,
+  HP varchar(8) DEFAULT NULL,
   `Level` int(2) DEFAULT NULL,
   `Char_Name` varchar(32) NOT NULL,
   `PersonalityTraits` varchar(512) DEFAULT NULL,
@@ -255,6 +267,7 @@ CREATE TABLE `ParticipatesIn` (
 DROP TABLE IF EXISTS `Class`;
 CREATE TABLE `Class` (
   `Class_Name` varchar(100) NOT NULL,
+  HP varchar(8) NOT NULL,
   `ERID` int(8) DEFAULT NULL,
   `FRID` int(8) DEFAULT NULL,
   `PRID` int(8) DEFAULT NULL,
@@ -328,4 +341,5 @@ CREATE TABLE `Spellrepo` (
   FOREIGN KEY (SPRID) REFERENCES SpellHaver (SPRID),
   FOREIGN KEY (`SPID`) REFERENCES `Spells` (`SPID`)
 );
+
 

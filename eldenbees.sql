@@ -1,19 +1,20 @@
 
+DROP TABLE IF EXISTS `ASI`;
 CREATE TABLE `ASI` (
   `ASIID` int(8) AUTO_INCREMENT NOT NULL,
-  `STR` int(2) DEFAULT NULL,
-  `DEX` int(2) DEFAULT NULL,
-  `CON` int(2) DEFAULT NULL,
-  `INT` int(2) DEFAULT NULL,
-  `WIS` int(2) DEFAULT NULL,
-  `CHA` int(2) DEFAULT NULL,
+  `Strength` int(2) DEFAULT NULL,
+  `Dexterity` int(2) DEFAULT NULL,
+  `Constitution` int(2) DEFAULT NULL,
+  `Intelligence` int(2) DEFAULT NULL,
+  `Wisdom` int(2) DEFAULT NULL,
+  `Charisma` int(2) DEFAULT NULL,
   PRIMARY KEY (`ASIID`)
 );
 
 DROP TABLE IF EXISTS `Account`;
 CREATE TABLE `Account` (
   `Username` varchar(32) NOT NULL,
-  `Password` varchar(32) NOT NULL,
+  `Password` varchar(60) NOT NULL,
   PRIMARY KEY (`Username`)
 );
 
@@ -31,8 +32,7 @@ CREATE TABLE `Equipment` (
   EID int(8) AUTO_INCREMENT NOT NULL,
   `Eqpmnt_Name` varchar(32) NOT NULL,
   `Type` varchar(32) DEFAULT NULL,
-  `Weight` varchar(32) DEFAULT NULL,
-  Attack varchar(32) DEFAULT NULL,
+  `Weight` float(8) DEFAULT NULL,
   Damage varchar(32) DEFAULT NULL,
   ACBonus varchar(32) DEFAULT NULL,
   `Description` varchar(512) DEFAULT NULL,
@@ -42,7 +42,8 @@ CREATE TABLE `Equipment` (
 DROP TABLE IF EXISTS `Feats`;
 CREATE TABLE `Feats` (
   `FID` int(8) AUTO_INCREMENT NOT NULL,
-  'Ft_Name' varchar(512) NOT NULL,
+  Ft_Name varchar(512) NOT NULL,
+  Level int(2) DEFAULT NULL,
   `Description` varchar(512) DEFAULT NULL,
   PRIMARY KEY (`FID`)
 );
@@ -57,35 +58,34 @@ CREATE TABLE `Languages` (
 DROP TABLE IF EXISTS `Proficiencies`;
 CREATE TABLE `Proficiencies` (
   `PRID` int(8) AUTO_INCREMENT NOT NULL,
-  `School` boolean NOT NULL,
-  `Acrobatics` boolean NOT NULL, 
-  `Animal Handling` boolean NOT NULL, 
-  `Athletics` boolean NOT NULL, 
-  `Deception` boolean NOT NULL, 
-  `Insight` boolean NOT NULL, 
-  `Intimidation` boolean NOT NULL, 
-  `Investigation` boolean NOT NULL, 
-  `Medicine` boolean NOT NULL, 
-  `Nature` boolean NOT NULL, 
-  `Perception` boolean NOT NULL, 
-  `Performance` boolean NOT NULL, 
-  `Persuasion` boolean NOT NULL, 
-  `Religion` boolean NOT NULL, 
-  `Sleight of Hand` boolean NOT NULL, 
-  `Stealth` boolean NOT NULL, 
-  `Survival` boolean NOT NULL,
+  `Acrobatics` boolean DEFAULT NULL, 
+  `Animal Handling` boolean DEFAULT NULL, 
+  `Athletics` boolean DEFAULT NULL, 
+  `Deception` boolean DEFAULT NULL, 
+  `Insight` boolean DEFAULT NULL, 
+  `Intimidation` boolean DEFAULT NULL, 
+  `Investigation` boolean DEFAULT NULL, 
+  `Medicine` boolean DEFAULT NULL, 
+  `Nature` boolean DEFAULT NULL, 
+  `Perception` boolean DEFAULT NULL, 
+  `Performance` boolean DEFAULT NULL, 
+  `Persuasion` boolean DEFAULT NULL, 
+  `Religion` boolean DEFAULT NULL, 
+  `Sleight of Hand` boolean DEFAULT NULL, 
+  `Stealth` boolean DEFAULT NULL, 
+  `Survival` boolean DEFAULT NULL,
   PRIMARY KEY (`PRID`)
 );
 
 DROP TABLE IF EXISTS `Saves`;
 CREATE TABLE `Saves` (
   `SAID` int(8) AUTO_INCREMENT NOT NULL,
-  `STR` boolean DEFAULT NULL,
-  `DEX` boolean DEFAULT NULL,
-  `CON` boolean DEFAULT NULL,
-  `INT` boolean DEFAULT NULL,
-  `WIS` boolean DEFAULT NULL,
-  `CHA` boolean DEFAULT NULL,
+  `Strength` boolean DEFAULT NULL,
+  `Dexterity` boolean DEFAULT NULL,
+  `Constitution` boolean DEFAULT NULL,
+  `Intelligence` boolean DEFAULT NULL,
+  `Wisdom` boolean DEFAULT NULL,
+  `Charisma` boolean DEFAULT NULL,
   PRIMARY KEY (`SAID`)
 );
 
@@ -95,7 +95,7 @@ CREATE TABLE `Spells` (
   `Spell_Name` varchar(32) NOT NULL,
   `Level` int(2) NOT NULL,
   `School` varchar(32) NOT NULL,
-  `Range` int(3) DEFAULT NULL,
+  `Spell_Range` varchar(32) DEFAULT NULL,
   Components varchar(3) DEFAULT NULL,
   Duration varchar(32) DEFAULT NULL,
   Attack varchar(32) DEFAULT NULL,
@@ -104,29 +104,72 @@ CREATE TABLE `Spells` (
   PRIMARY KEY (SPID)
 );
 
-/* ============ */
+/* = = = = = = = = = = = = */
+/* = = = = = = = = = = = = */
 
+DROP TABLE IF EXISTS `EquipmentHaver`;
 CREATE TABLE EquipmentHaver (
   ERID int(8) AUTO_INCREMENT NOT NULL,
+  source varchar(32) NOT NULL,
   PRIMARY KEY (ERID)
 );
 
+DROP TABLE IF EXISTS FeatHaver;
 CREATE TABLE FeatHaver (
   FRID int(8) AUTO_INCREMENT NOT NULL,
+  source varchar(32) NOT NULL,
   PRIMARY KEY (FRID)
 );
 
+DROP TABLE IF EXISTS LanguageHaver;
 CREATE TABLE LanguageHaver (
   LRID int(8) AUTO_INCREMENT NOT NULL,
+  source varchar(32) NOT NULL,
   PRIMARY KEY (LRID)
 );
 
+DROP TABLE IF EXISTS SpellHaver;
 CREATE TABLE SpellHaver (
   SPRID int(8) AUTO_INCREMENT NOT NULL,
+  source varchar(32) NOT NULL,
   PRIMARY KEY (SPRID)
 );
 
-/* ============ */
+DROP TABLE IF EXISTS EquipmentHaver;
+DROP TABLE IF EXISTS `EquipmentRepo`;
+CREATE TABLE `EquipmentRepo` (
+  `ERID` int(8) NOT NULL,
+  `EID` int(8) NOT NULL,
+  FOREIGN KEY (ERID) REFERENCES EquipmentHaver (ERID),
+  FOREIGN KEY (`EID`) REFERENCES `Equipment` (`EID`)
+);
+
+DROP TABLE IF EXISTS `FeatRepo`;
+CREATE TABLE `FeatRepo` (
+  `FRID` int(8) NOT NULL,
+  `FID` int(8) NOT NULL,
+  FOREIGN KEY (FRID) REFERENCES FeatHaver (FRID),
+  FOREIGN KEY (`FID`) REFERENCES `Feats` (`FID`)
+);
+
+DROP TABLE IF EXISTS `LanguageRepo`;
+CREATE TABLE `LanguageRepo` (
+  `LRID` int(8) NOT NULL,
+  `LID` int(8) NOT NULL,
+  FOREIGN KEY (LRID) REFERENCES LanguageHaver (LRID),
+  FOREIGN KEY (`LID`) REFERENCES `Languages` (`LID`)
+);
+
+DROP TABLE IF EXISTS `SpellRepo`;
+CREATE TABLE `Spellrepo` (
+  `SPRID` int(8) NOT NULL,
+  `SPID` int(8) NOT NULL,
+  FOREIGN KEY (SPRID) REFERENCES SpellHaver (SPRID),
+  FOREIGN KEY (`SPID`) REFERENCES `Spells` (`SPID`)
+);
+
+/* = = = = = = = = = = = = */
+/* = = = = = = = = = = = = */
 
 DROP TABLE IF EXISTS `Background`;
 CREATE TABLE `Background` (
@@ -209,7 +252,6 @@ CREATE TABLE `PlayerCharacter` (
 DROP TABLE IF EXISTS `PlayerProf`;
 CREATE TABLE `PlayerProf` (
   `Char_ID` int(8) NOT NULL,
-  `School` boolean NOT NULL,
   `Acrobatics` boolean NOT NULL, 
   `Animal Handling` boolean NOT NULL, 
   `Athletics` boolean NOT NULL, 
@@ -233,12 +275,12 @@ CREATE TABLE `PlayerProf` (
 DROP TABLE IF EXISTS `PlayerSaves`;
 CREATE TABLE `PlayerSaves` (
   `Char_ID` int(8) NOT NULL,
-  `STR` boolean DEFAULT NULL,
-  `DEX` boolean DEFAULT NULL,
-  `CON` boolean DEFAULT NULL,
-  `INT` boolean DEFAULT NULL,
-  `WIS` boolean DEFAULT NULL,
-  `CHA` boolean DEFAULT NULL,
+  `Strength` boolean DEFAULT NULL,
+  `Dexterity` boolean DEFAULT NULL,
+  `Constitution` boolean DEFAULT NULL,
+  `Intelligence` boolean DEFAULT NULL,
+  `Wisdom` boolean DEFAULT NULL,
+  `Charisma` boolean DEFAULT NULL,
   PRIMARY KEY (`Char_ID`),
   FOREIGN KEY (`Char_ID`) REFERENCES `PlayerCharacter` (`Char_ID`)
 );
@@ -308,38 +350,5 @@ CREATE TABLE `PlayerClass` (
   FOREIGN KEY (`SubC_Name`) REFERENCES `SubClass` (`SubC_Name`)
 );
 
-/* ============ */
-
-DROP TABLE IF EXISTS `EquipmentRepo`;
-CREATE TABLE `EquipmentRepo` (
-  `ERID` int(8) NOT NULL,
-  `EID` int(8) NOT NULL,
-  FOREIGN KEY (ERID) REFERENCES EquipmentHaver (ERID),
-  FOREIGN KEY (`EID`) REFERENCES `Equipment` (`EID`)
-);
-
-DROP TABLE IF EXISTS `FeatRepo`;
-CREATE TABLE `FeatRepo` (
-  `FRID` int(8) NOT NULL,
-  `FID` int(8) NOT NULL,
-  FOREIGN KEY (FRID) REFERENCES FeatHaver (FRID),
-  FOREIGN KEY (`FID`) REFERENCES `Feats` (`FID`)
-);
-
-DROP TABLE IF EXISTS `LanguageRepo`;
-CREATE TABLE `LanguageRepo` (
-  `LRID` int(8) NOT NULL,
-  `LID` int(8) NOT NULL,
-  FOREIGN KEY (LRID) REFERENCES LanguageHaver (LRID),
-  FOREIGN KEY (`LID`) REFERENCES `Languages` (`LID`)
-);
-
-DROP TABLE IF EXISTS `SpellRepo`;
-CREATE TABLE `Spellrepo` (
-  `SPRID` int(8) NOT NULL,
-  `SPID` int(8) NOT NULL,
-  FOREIGN KEY (SPRID) REFERENCES SpellHaver (SPRID),
-  FOREIGN KEY (`SPID`) REFERENCES `Spells` (`SPID`)
-);
 
 

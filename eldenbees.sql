@@ -189,10 +189,10 @@ CREATE TABLE `Background` (
 DROP TABLE IF EXISTS `Race`;
 CREATE TABLE `Race` (
   `Race_Name` varchar(32) NOT NULL,
-  `ASIID` int(8) NOT NULL,
-  `FRID` int(8) NOT NULL,
-  `PRID` int(8) NOT NULL,
-  `SPRID` int(8) NOT NULL,
+  `ASIID` int(8) DEFAULT NULL,
+  `FRID` int(8) DEFAULT NULL,
+  `PRID` int(8) DEFAULT NULL,
+  `SPRID` int(8) DEFAULT NULL,
   `Size` varchar(16) DEFAULT NULL,
   `Speed` int(3) DEFAULT NULL,
   `Description` varchar(512) DEFAULT NULL,

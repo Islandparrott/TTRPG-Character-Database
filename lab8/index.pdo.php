@@ -77,33 +77,48 @@ if (isset($_POST["search"])) {
 
 <h2>SQL INSERT using input from form</h2>
 
-<?php
-$insert_form = new PhpFormBuilder();
-$insert_form->set_att("method", "POST");
-$insert_form->add_input("data to insert", array(
-    "type" => "text"
-), "insert_data");
-$insert_form->add_input("Insert", array(
-    "type" => "submit",
-    "value" => "Insert"
-), "insert");
-$insert_form->build_form();
+    <?php
+        $insert_form = new PhpFormBuilder();
+        $insert_form->set_att("method", "POST");
+        $insert_form->add_input("Feat Name:", array(
+            "type" => "text"
+        ), "featname");
+        $insert_form->add_input("Feat Level:", array(
+            "type" => "number"
+        ), "featlvl");
+        $insert_form->add_input("Feat Description:", array(
+            "type" => "text"
+        ), "featdesc");
+        $insert_form->add_input("Insert", array(
+            "type" => "submit",
+            "value" => "Insert"
+        ), "insert");
+        $insert_form->build_form();
 
-if (isset($_POST["insert"]) && !empty($_POST["insert_data"])) {
-    $dataToInsert = htmlspecialchars($_POST["insert_data"]);
-    echo "inserting $dataToInsert ...";
+        if (isset($_POST["insert"])) 
+        {
+            if (!empty($_POST["featname"]))
+                $insertName = htmlspecialchars($_POST["featname"]);
+            if (!empty($_POST["featlvl"]))
+                $insertLvl = htmlspecialchars($_POST["featlvl"]);
+            else
+                $insertLvl = NULL;
+            if (!empty($_POST["featname"]))
+                $insertDesc = htmlspecialchars($_POST["featdesc"]);
 
-    $db = get_pdo_connection();
-    $query = $db->prepare("insert into hello (data) values (?)");
-    $query->bindParam(1, $dataToInsert, PDO::PARAM_STR);
-    if ($query->execute()) {    
-        header( "Location: " . $_SERVER['PHP_SELF']);
-    }
-    else {
-        echo "Error inserting: " . $db->errorInfo();
-    }
-}
-?>
+            $db = get_pdo_connection();
+            $query = $db->prepare("insert into Feats (Ft_Name, Level, Description) values (:bindname");
+# , :bindlvl, :binddesc");
+            $query->bindParam(":bindname", $insertName, PDO::PARAM_STR);
+#           $query->bindParam(":bindlvl", $insertLvl, PDO::PARAM_INT);
+#           $query->bindParam(":binddesc", $insertDesc, PDO::PARAM_STR);
+ 
+            if ($query->execute())   
+                header( "Location: " . $_SERVER['PHP_SELF']);
+            else 
+                echo "Error inserting: " . $db->errorInfo();
+        }
+    ?>
 
 <h2>SQL UPDATE using input from form</h2>
 

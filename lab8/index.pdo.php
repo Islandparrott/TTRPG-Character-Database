@@ -9,29 +9,32 @@ require_once("config.php");
     <title><?= $PROJECT_NAME ?></title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
 <h1><?= $PROJECT_NAME?></h1>
 
-<?php
-if (!empty($_SESSION["affected_rows"])) {
-    echo "Deleted " . $_SESSION["affected_rows"] . " rows";
-    unset($_SESSION["affected_rows"]);
-}
-?>
+    <?php
+        if (!empty($_SESSION["affected_rows"])) 
+        {
+            echo "Deleted " . $_SESSION["affected_rows"] . " rows";
+            unset($_SESSION["affected_rows"]);
+        }
+    ?>
 
 <h2>SQL SELECT -> HTML Table using <a href="https://www.php.net/manual/en/book.pdo.php">PDO</a></h2>
-<?php
 
-$db = get_pdo_connection();
-$query = $db->prepare("SELECT * FROM hello");
-$query->execute();
-$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+    <?php
+        $db = get_pdo_connection();
+        $query = $db->prepare("SELECT * FROM Feats");
+        $query->execute();
+        $rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-echo makeTable($rows);
-?>
+        echo makeTable($rows);
+    ?>
 
+    <h2>SQL SELECT from PlayerCharacter</h2>
 
-<h2>SQL SELECT using input from form</h2>
     <?php
         $select_form = new PhpFormBuilder();
         $select_form->set_att("method", "POST");
@@ -77,7 +80,7 @@ echo makeTable($rows);
         }
     ?>
 
-<h2>SQL INSERT using input from form</h2>
+<h2>SQL INSERT into Feats</h2>
 
     <?php
         $insert_form = new PhpFormBuilder();
@@ -105,15 +108,15 @@ echo makeTable($rows);
                 $insertLvl = htmlspecialchars($_POST["featlvl"]);
             else
                 $insertLvl = NULL;
-            if (!empty($_POST["featname"]))
+            if (!empty($_POST["featdesc"]))
                 $insertDesc = htmlspecialchars($_POST["featdesc"]);
 
             $db = get_pdo_connection();
-            $query = $db->prepare("insert into Feats (Ft_Name, Level, Description) values (:bindname");
+            $query = $db->prepare("insert into Feats (Ft_Name, Level, Description) values (?");
 # , :bindlvl, :binddesc");
-            $query->bindParam(":bindname", $insertName, PDO::PARAM_STR);
-#           $query->bindParam(":bindlvl", $insertLvl, PDO::PARAM_INT);
-#           $query->bindParam(":binddesc", $insertDesc, PDO::PARAM_STR);
+            $query->bindParam(1, $insertName, PDO::PARAM_STR);
+#           $query->bindParam(2, $insertLvl, PDO::PARAM_INT);
+#           $query->bindParam(3, $insertDesc, PDO::PARAM_STR);
  
             if ($query->execute())   
                 header( "Location: " . $_SERVER['PHP_SELF']);
@@ -124,83 +127,79 @@ echo makeTable($rows);
 
 <h2>SQL UPDATE using input from form</h2>
 
-<?php
-$update_form = new PhpFormBuilder();
-$update_form->set_att("method", "POST");
-$update_form->add_input("id to update data for", array(
-    "type" => "number"
-), "update_id");
-$update_form->add_input("data to update", array(
-    "type" => "text"
-), "update_data");
-$update_form->add_input("Update", array(
-    "type" => "submit",
-    "value" => "Update"
-), "update");
-$update_form->build_form();
+    <?php
+        $update_form = new PhpFormBuilder();
+        $update_form->set_att("method", "POST");
+        $update_form->add_input("id to update data for", array(
+            "type" => "number"
+        ), "update_id");
+        $update_form->add_input("data to update", array(
+            "type" => "text"
+        ), "update_data");
+        $update_form->add_input("Update", array(
+            "type" => "submit",
+            "value" => "Update"
+        ), "update");
+        $update_form->build_form();
 
-if (isset($_POST["update"]) 
-    && !empty($_POST["update_data"])
-    && !empty($_POST["update_id"])) {
-    $dataToUpdate = htmlspecialchars($_POST["update_data"]);
-    $idToUpdate = htmlspecialchars($_POST["update_id"]);
-    echo "updating $dataToUpdate ...";
+        if (isset($_POST["update"]) && !empty($_POST["update_data"])&& !empty($_POST["update_id"])) 
+        {
+            $dataToUpdate = htmlspecialchars($_POST["update_data"]);
+            $idToUpdate = htmlspecialchars($_POST["update_id"]);
+            echo "updating $dataToUpdate ...";
 
-    $db = get_pdo_connection();
-    $query = $db->prepare("update hello set data= ? where id = ?");
-    $query->bindParam(1, $dataToUpdate, PDO::PARAM_STR);
-    $query->bindParam(2, $idToUpdate, PDO::PARAM_INT);
-    if ($query->execute()) {    
-        header( "Location: " . $_SERVER['PHP_SELF']);
-    }
-    else {
-        echo "Error updating: " . $db->errorInfo();
-    }
-}
-
-?>
+            $db = get_pdo_connection();
+            $query = $db->prepare("update Feats set data= ? where id = ?");
+            $query->bindParam(1, $dataToUpdate, PDO::PARAM_STR);
+            $query->bindParam(2, $idToUpdate, PDO::PARAM_INT);
+            if ($query->execute()) {    
+                header( "Location: " . $_SERVER['PHP_SELF']);
+            }
+            else {
+                echo "Error updating: " . $db->errorInfo();
+            }
+        }
+    ?>
 
 <h2>SQL DELETE using input from form</h2>
 
-<?php
-$delete_form = new PhpFormBuilder();
-$delete_form->set_att("method", "POST");
-$delete_form->add_input("id to delete for", array(
-    "type" => "number"
-), "delete_id");
-$delete_form->add_input("data to delete", array(
-    "type" => "text"
-), "delete_data");
-$delete_form->add_input("Delete", array(
-    "type" => "submit",
-    "value" => "Delete"
-), "delete");
-$delete_form->build_form();
+    <?php
+        $delete_form = new PhpFormBuilder();
+        $delete_form->set_att("method", "POST");
+        $delete_form->add_input("id to delete for", array(
+            "type" => "number"
+        ), "delete_id");
+        $delete_form->add_input("data to delete", array(
+            "type" => "text"
+        ), "delete_data");
+        $delete_form->add_input("Delete", array(
+            "type" => "submit",
+            "value" => "Delete"
+        ), "delete");
+        $delete_form->build_form();
 
-if (isset($_POST["delete"])) {
+        if (isset($_POST["delete"])) 
+        {
+            echo "deleting...<br>";
 
-    echo "deleting...<br>";
+            $db = get_pdo_connection();
+            $query = false;
 
-    $db = get_pdo_connection();
-    $query = false;
-
-    if (!empty($_POST["delete_id"])) {
-        echo "deleting by id...";
-        $query = $db->prepare("delete from hello where id = ?");
-        $query->bindParam(1, $_POST["delete_id"], PDO::PARAM_INT);
-    }
-    else if (!empty($_POST["delete_data"])) {
-        echo "deleting by data...";
-        $query = $db->prepare("delete from hello where data = ?");
-        $query->bindParam(1, $_POST["delete_data"], PDO::PARAM_STR);
-    }
-    if ($query) {
-        $query->execute();
-        $_SESSION["affected_rows"] = $query->rowCount();
-        header("Location: " . $_SERVER["PHP_SELF"]);
-    }
-    else{
-        echo "Error executing delete query: " . $db->errorInfo();
-    }
-}
-?>
+            if (!empty($_POST["delete_id"])) {
+                echo "deleting by id...";
+                $query = $db->prepare("delete from Feats where FID = ?");
+                $query->bindParam(1, $_POST["delete_id"], PDO::PARAM_INT);
+            }
+            else if (!empty($_POST["delete_data"])) {
+                echo "deleting by data...";
+                $query = $db->prepare("delete from Feats where data = ?");
+                $query->bindParam(1, $_POST["delete_data"], PDO::PARAM_STR);
+            }
+            if ($query) {
+                $query->execute();
+                $_SESSION["affected_rows"] = $query->rowCount();
+                header("Location: " . $_SERVER["PHP_SELF"]);
+            }
+            else{
+                echo "Error executing delete query: " . $db->errorInfo();
+            }

@@ -203,3 +203,5 @@ require_once("config.php");
             else{
                 echo "Error executing delete query: " . $db->errorInfo();
             }
+        }
+    ?>

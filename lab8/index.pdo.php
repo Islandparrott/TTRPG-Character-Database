@@ -32,48 +32,50 @@ echo makeTable($rows);
 
 
 <h2>SQL SELECT using input from form</h2>
-<?php
-$select_form = new PhpFormBuilder();
-$select_form->set_att("method", "POST");
-$select_form->add_input("id to search for", array(
-    "type" => "number"
-), "search_id");
-$select_form->add_input("data to search for", array(
-    "type" => "text"
-), "search_data");
-$select_form->add_input("Submit", array(
-    "type" => "submit",
-    "value" => "Search"
-), "search");
-$select_form->build_form();
+    <?php
+        $select_form = new PhpFormBuilder();
+        $select_form->set_att("method", "POST");
+        $select_form->add_input("ID Search:", array(
+            "type" => "number"
+        ), "search_id");
+        $select_form->add_input("Owner to search for", array(
+            "type" => "text"
+        ), "search_username");
+        $select_form->add_input("Submit", array(
+            "type" => "submit",
+            "value" => "Search"
+        ), "search");
+        $select_form->build_form();
 
-if (isset($_POST["search"])) {
-    echo "searching...<br>";
+        if (isset($_POST["search"])) 
+        {
+            echo "searching...<br>";
 
-    $db = get_pdo_connection();
-    $query = false;
+            $db = get_pdo_connection();
+            $query = false;
 
-    if (!empty($_POST["search_id"])) {
-        echo "searching by id...";
-        $query = $db->prepare("select * from hello where id = :id");
-        $query->bindParam(":id", $_POST["search_id"], PDO::PARAM_INT);
-    }
-    else if (!empty($_POST["search_data"])) {
-        echo "searching by data...";
-        $query = $db->prepare("select * from hello where data = :data");
-        $query->bindParam(":data", $_POST["search_data"], PDO::PARAM_STR);
-    }
-    if ($query) {
-        $query->execute();
-        $rows = $query->fetchAll(PDO::FETCH_ASSOC);
-        echo makeTable($rows);
-    }
-    else{
-        echo "Error executing query: " . $db->errorInfo();
-    }
-}
-
-?>
+            if (!empty($_POST["search_id"])) 
+            {
+                echo "searching by id...";
+                $query = $db->prepare("select * from PlayerCharacter where Char_ID = :id");
+                $query->bindParam(":id", $_POST["search_id"], PDO::PARAM_INT);
+            }
+            else if (!empty($_POST["search_username"])) 
+            {
+                echo "searching by data...";
+                $query = $db->prepare("select * from PlayerCharacter where Username = :uname");
+                $query->bindParam(":uname", $_POST["search_username"], PDO::PARAM_STR);
+            }
+            if ($query) 
+            {
+                $query->execute();
+                $rows = $query->fetchAll(PDO::FETCH_ASSOC);
+                echo makeTable($rows);
+            }
+            else
+                echo "Error executing query: " . $db->errorInfo();
+        }
+    ?>
 
 <h2>SQL INSERT using input from form</h2>
 

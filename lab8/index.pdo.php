@@ -125,15 +125,15 @@ require_once("config.php");
         }
     ?>
 
-<h2>SQL UPDATE using input from form</h2>
+<h2>SQL UPDATE Feat name from Feats</h2>
 
     <?php
         $update_form = new PhpFormBuilder();
         $update_form->set_att("method", "POST");
-        $update_form->add_input("id to update data for", array(
+        $update_form->add_input("Feat ID to update:", array(
             "type" => "number"
         ), "update_id");
-        $update_form->add_input("data to update", array(
+        $update_form->add_input("Feat Name to update:", array(
             "type" => "text"
         ), "update_data");
         $update_form->add_input("Update", array(
@@ -149,7 +149,7 @@ require_once("config.php");
             echo "updating $dataToUpdate ...";
 
             $db = get_pdo_connection();
-            $query = $db->prepare("update Feats set data= ? where id = ?");
+            $query = $db->prepare("update Feats set Ft_Name = ? where FID = ?");
             $query->bindParam(1, $dataToUpdate, PDO::PARAM_STR);
             $query->bindParam(2, $idToUpdate, PDO::PARAM_INT);
             if ($query->execute()) {    

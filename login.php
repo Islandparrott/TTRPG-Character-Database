@@ -9,11 +9,21 @@
 session_start();
 
 if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
+    echo " Logged in ";
     header("location: index.php");
     exit;
 }
+else
+    echo " Not logged in ";
 
-require_once("../config.php");
+if (!isset($connection)) {
+    $connection = mysqli_connect(
+        'localhost', // the server address (don't change)
+        'eldenbees', // the MariaDB username
+        'seebnedle3420F22', // the MariaDB username's password
+        'eldenbees' // the MariaDB database name
+    ) or die(mysqli_connect_error());
+}
 
 if(isset($_POST['login']))
 {   
@@ -31,7 +41,7 @@ if(isset($_POST['login']))
                 $_SESSION["loggedin"] = true;
                 $_SESSION["username"] = $row["Username"];   
                 
-                header("location: index.php");
+                echo " Logged in ";
             } else 
                 echo " Password not verified ";
         }
@@ -43,19 +53,12 @@ if(isset($_POST['register']))
         $userErr = 1;
     }
 
-    $username = $_POST['username'];
-    $usrsql = "SELECT Username FROM Account WHERE Username = '$username'";
-    $result = $connection->query($usrsql);
-    if ($result->num_rows > 0) 
-    {   $userErr = 1;
-        echo "Username is already in use.";
-    }
-
-    if($_POST['password'] == $_POST['password2'] && $userErr == 0)
+    if($_POST['password'] == $_POST['password2'])
     {   
+        $password = $_POST['password'];
         $hash_password = password_hash($password, PASSWORD_DEFAULT);
         $username = $_POST['username'];
-        $usrsql = "INSERT INTO Account (Username, Password) VALUES ('$username', '$hash_password')";
+        $usrsql = "INSERT INTO Account (Username, 'Password') VALUES ('$username', '$hash_password')";
         if ($connection->query($usrsql) === TRUE) 
             header("Location: login.php");
     }
@@ -76,7 +79,7 @@ if(isset($_POST['register']))
     <h1>Login/Register</h1>
     
     <nav>
-        <a href="../">< 3680-home</a><br>
+        <a href="../">< Index</a><br>
     </nav>  <br>
 
     <div id="login-card" class="border-flex">

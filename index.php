@@ -1,416 +1,388 @@
 <?php
-    require_once("config.php");
+    session_start();
+
+    if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === false){
+        header("location: index.php");
+        exit;
+    }
+
+    if (!isset($connection)) {
+        $connection = mysqli_connect(
+            'localhost', // the server address (don't change)
+            'eldenbees', // the MariaDB username
+            'seebnedle3420F22', // the MariaDB username's password
+            'eldenbees' // the MariaDB database name
+        ) or die(mysqli_connect_error());
+    }
+    if ($connection === false) {
+        echo "Unable to connect to database<br/>";
+        echo mysqli_connect_error();
+    }
+    
+    $sessusername = $_SESSION['username'];
+
+    if(isset($_POST['pc-choice-form']))
+    {   if($_POST['ancestry'] != "Ancestry")
+        {   $posttemp = $_POST['ancestry'];
+            $sql = "UPDATE users SET ancestry = '$posttemp' WHERE users_name = '$sessusername'";
+            $conn->query($sql);
+        }
+        if($_POST['heritage'] != "Heritage")
+        {   $posttemp = $_POST['heritage'];
+            if($posttemp == "Default")
+                $posttemp = '';
+                $sql = "UPDATE users SET heritage = '$posttemp' WHERE users_name = '$sessusername'";
+            $conn->query($sql);
+        }
+        if($_POST['background'] != "Background")
+        {   $posttemp = $_POST['background'];
+            $sql = "UPDATE users SET background = '$posttemp' WHERE users_name = '$sessusername'";
+            $conn->query($sql);
+        }
+        if($_POST['class'] != "Class")
+        {   $posttemp = $_POST['class'];
+            $sql = "UPDATE users SET class = '$posttemp' WHERE users_name = '$sessusername'";
+            $conn->query($sql);
+        }
+        if(!empty($_POST['pc-img']))
+        {   $posttemp = $_POST['pc-img'];
+            $sql = "UPDATE users SET img = '$posttemp' WHERE users_name = '$sessusername'";
+            $conn->query($sql);
+        }
+        if(!empty($_POST['pc-name']))
+        {   $posttemp = $_POST['pc-name'];
+            $sql = "UPDATE users SET pc_name = '$posttemp' WHERE users_name = '$sessusername'";
+            $conn->query($sql);
+        }
+        if($_POST['align-lc'] != "Align-LC")
+        {   $posttemp = $_POST['align-lc'];
+            $sql = "UPDATE users SET align_lc = '$posttemp' WHERE users_name = '$sessusername'";
+            $conn->query($sql);
+        }
+        if($_POST['align-ge'] != "Align-GE")
+        {   $posttemp = $_POST['align-ge'];
+            $sql = "UPDATE users SET align_ge = '$posttemp' WHERE users_name = '$sessusername'";
+            $conn->query($sql);
+        }
+    }
+
+    $sql = "SELECT pc_name, img, ancestry, heritage, background, class, align_lc, align_ge FROM users WHERE users_name = '$sessusername'";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) 
+        while($row = $result->fetch_assoc()) 
+        {   $_SESSION['pc-name'] = $row["pc_name"];
+            $_SESSION['pc-img'] = $row["img"];
+            $_SESSION['ancestry'] = $row["ancestry"];
+            $_SESSION['heritage'] = $row["heritage"];
+            $_SESSION['background'] = $row["background"];
+            $_SESSION['class'] = $row["class"];
+            $_SESSION['align-lc'] = $row["align_lc"];
+            $_SESSION['align-ge'] = $row["align_ge"];
+        }
+
+    echo $row["img"];
+    if (isset($_GET['logout'])) {
+        logoutphp();
+    }
+
+    function logoutphp()
+    {   session_start();
+        
+        // Unset all of the session variables
+        $_SESSION = array();
+        
+        // Destroy the session.
+        session_destroy();
+        
+        // Redirect to login page
+        header("location: login.php");
+        exit;
+    }
+
+    if(isset($_POST['chat-send']))
+    {   
+        $pcImg = $_SESSION['pc-img'];
+        $pcName = $_SESSION['pc-name'];
+        $msg = $_POST['chat-msg'];
+
+        $sql = "INSERT INTO chat (pc_img, pc_name, msg) VALUES ('$pcImg', '$pcName', '$msg')";
+        if ($conn->query($sql) === TRUE) 
+            header("Location: index.php");
+    }
 ?>
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Elden Bees</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/ui-darkness/jquery-ui.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous">
+        </script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+            crossorigin="anonymous">
+    </script>
+    <script src="script.js"></script>
+
+    <title>3680 - RollPlay VTT</title>
 </head>
-
+    
 <body>
+   
+    <h1>RollPlay VTT</h1>
+        
+    <nav>
+        <a href="../">< Index</a><br>
+    </nav>  <br>
 
-<h1>Elden Bees</h1>
+    <p>Welcome, <?php echo $_SESSION['username']; ?>!   <a href='index.php?logout=true'>Logout</a><br></p>
 
-<?php
-    if (!empty($_SESSION["affected_rows"])) 
-    {
-        echo "Deleted " . $_SESSION["affected_rows"] . " rows";
-        unset($_SESSION["affected_rows"]);
-    }
-?>
 
-<h1>Order of Creation</h1>
+    <div id="main-container" class="border-flex"> 
+        <div id="pc-choices" class="border-outset">
+                <form method="POST">
+                    <select id="ancestry" name="ancestry" style="color:black">
+                        <option value="Ancestry" style="color:gray;">Ancestry</option>
+                        <option value="Dwarf">Dwarf</option>
+                        <option value="Elf">Elf</option>
+                        <option value="Gnome">Gnome</option>
+                        <option value="Goblin">Goblin</option>
+                        <option value="Halfling">Halfling</option>
+                        <option value="Human">Human</option>
+                    </select><br>
+                    <select id="heritage" name="heritage" style="color:black">
+                        <option value="Heritage" style="color:gray;">Heritage</option>
+                        <option value="Aasimar">Aasimar</option>
+                        <option value="Changeling">Changeling</option>
+                        <option value="Default">Default</option>
+                        <option value="Dhampir">Dhampir</option>
+                        <option value="Dragonkin">Dragonkin</option>
+                        <option value="Duskwalker">Duskwalker</option>
+                        <option value="Tiefling">Tiefling</option>
+                    </select><br>
+                    <select id="background" name="background" style="color:black">
+                        <option value="Background" style="color:gray;">Background</option>
+                        <option value="Acolyte">Acolyte</option>
+                        <option value="Farmhand">Farmhand</option>
+                        <option value="Gladiator">Gladiator</option>
+                        <option value="Hermit">Hermit</option>
+                        <option value="Merchant">Merchant</option>
+                        <option value="Scholar">Scholar</option>
+                    </select><br>
+                    <select id="class" name="class" style="color:black">
+                        <option value="Class" style="color:gray;">Class</option>
+                        <option value="Barbarian">Barbarian</option>
+                        <option value="Bard">Bard</option>
+                        <option value="Champion">Champion</option>
+                        <option value="Cleric">Cleric</option>
+                        <option value="Druid">Druid</option>
+                        <option value="Fighter">Fighter</option>
+                        <option value="Monk">Monk</option>
+                        <option value="Ranger">Ranger</option>
+                        <option value="Rogue">Rogue</option>
+                        <option value="Sorcerer">Sorcerer</option>
+                        <option value="Wizard">Wizard</option>
+                    </select><br><br>
+                    <div id="bio-sub">
+                        <input type="text" id="pc-img" name="pc-img" placeholder="image-url"></input><br>
+                        <input type="text" name="pc-name" placeholder="name"></input><br><br>
 
-<h2>Account</h2>
-<?php
-    $db = get_pdo_connection();
-    $query = $db->prepare("SELECT * FROM Account");
-    $query->execute();
-    $rows = $query->fetchAll(PDO::FETCH_ASSOC);
+                        <div id="aln-sub" class="border-flex">
+                            <select id="align-lc" name="align-lc" style="color:black">
+                                <option value="Align-LC">Align LC</option>
+                                <option value="Lawful">Lawful</option>
+                                <option value="Neutral">Neutral</option>
+                                <option value="Chaotic">Chaotic</option>
+                            </select>
+                            -
+                            <select id="align-ge" name="align-ge" style="color:black">
+                                <option value="Align-GE">Align GE</option>
+                                <option value="Good">Good</option>
+                                <option value="Neutral">Neutral</option>
+                                <option value="Evil">Evil</option>
+                            </select>
+                        </div>
+                    </div><br>
 
-    echo makeTable($rows);
-    
-    $insert_form = new PhpFormBuilder();
-    $insert_form->set_att("method", "POST");
-    $insert_form->add_input("Username:", array(
-        "type" => "text"
-    ), "insert_uname");
-    $insert_form->add_input("Password", array(
-        "type" => "text"
-    ), "insert_pword");
-    $insert_form->add_input("Insert", array(
-        "type" => "submit",
-        "value" => "Insert"
-    ), "insertacc");
-    $insert_form->build_form();
+                    <input name="pc-choice-form" type="submit" value="Update">
+                </form>
+        </div>
 
-    if (isset($_POST["insertacc"])) 
-    {
-        if (!empty($_POST["insert_uname"]))
-        {
-            $unameToInsert = htmlspecialchars($_POST["insert_uname"]);
-            echo "inserting $unameToInsert ...";
-        }
-        if (!empty($_POST["insert_pword"]))
-        {
-            $pwordToInsert = htmlspecialchars($_POST["insert_pword"]);
-            echo "inserting $pwordToInsert ...";
-        }
+        <div id="pc-display" class="border-flex" >
+                <img id="image-bio" class="border-outset" src="<?php echo $_SESSION['pc-img']; ?>" >
+                <div id="bio">
+                    <div id="name-bio" class="border-flex"><?php echo $_SESSION['pc-name']; ?></div>
+                    <div id="ancestry-bio" class="border-flex"><?php echo $_SESSION['heritage'] . " " . $_SESSION['ancestry']; ?></div>
+                    <div id="background-bio" class="border-flex"><?php echo $_SESSION['background']; ?></div>
+                    <div id="class-bio" class="border-flex"><?php echo $_SESSION['class']; ?></div>
 
-        $db = get_pdo_connection();
-        $query = $db->prepare("INSERT INTO Account (Username, Password) values (?, ?)");
-        $query->bindParam(1, $unameToInsert, PDO::PARAM_STR);
-        $query->bindParam(2, $pwordToInsert, PDO::PARAM_STR);
-        if ($query->execute())     
-            header( "Location: " . $_SERVER['PHP_SELF']);
-        else 
-            echo "Error inserting: " . $db->errorInfo();
-    }
-?>
+                    <div id="align-size-speed">
+                        <div id="align" class="border-flex">
+                            <?php 
+                                if($_SESSION['align-lc'] == $_SESSION['align-ge'])
+                                    echo "True Neutral";
+                                else
+                                    echo $_SESSION['align-lc'] . " " . $_SESSION['align-ge']; 
+                            ?>
+                        </div>
+                        <div id="size" class="border-flex">Size</div>
+                        <div id="speed" class="border-flex">Speed</div>
+                    </div>
+                    <div id="abilities" class="border-flex"> 
+                        <div id="ability">
+                            <div id="label-str">STR</div>
+                            <div id="stat-str">10</div>
+                            <div id="mod-str"><img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png"> +0</div>
+                        </div>
 
-<h2>Equipment</h2>
-<?php
-    $db = get_pdo_connection();
-    $query = $db->prepare("SELECT * FROM Equipment");
-    $query->execute();
-    $rows = $query->fetchAll(PDO::FETCH_ASSOC);
+                        <div id="ability">
+                            <div id="label-dex">DEX</div>
+                            <div id="stat-dex">10</div>
+                            <div id="mod-dex"><img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png"> +0</div>
+                        </div>
 
-    echo makeTable($rows);
-    
-    $insert_form = new PhpFormBuilder();
-    $insert_form->set_att("method", "POST");
-    $insert_form->add_input("Item Name:", array(
-        "type" => "text"
-    ), "insert_iname");
-    $insert_form->add_input("Type:", array(
-        "type" => "text"
-    ), "insert_itype");
-    $insert_form->add_input("Weight (in lbs):", array(
-        "type" => "number"
-    ), "insert_iwgt");
-    $insert_form->add_input("Damage (in dice):", array(
-        "type" => "text"
-    ), "insert_idmg");
-    $insert_form->add_input("AC Bonus:", array(
-        "type" => "number"
-    ), "insert_iac");
-    $insert_form->add_input("Item Description:", array(
-        "type" => "text"
-    ), "insert_idesc");
-    $insert_form->add_input("Insert", array(
-        "type" => "submit",
-        "value" => "Insert"
-    ), "inserteq");
-    $insert_form->build_form();
+                        <div id="ability">
+                            <div id="label-con">CON</div>
+                            <div id="stat-con">10</div>
+                            <div id="mod-con"><img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png"> +0</div>
+                        </div>
 
-    if (isset($_POST["inserteq"])) 
-    {
-        if (!empty($_POST["insert_iname"]))
-        {
-            $inameToInsert = htmlspecialchars($_POST["insert_iname"]);
-            echo "inserting $inameToInsert ...";
-        }
-        if (!empty($_POST["insert_itype"]))
-        {
-            $itypeToInsert = htmlspecialchars($_POST["insert_itype"]);
-            echo "inserting $itypeToInsert ...";
-        }
-        if (!empty($_POST["insert_iwgt"]))
-        {
-            $iwgtToInsert = htmlspecialchars($_POST["insert_iwgt"]);
-            echo "inserting $iwgtToInsert ...";
-        }
-        if (!empty($_POST["insert_idmg"]))
-        {
-            $idmgToInsert = htmlspecialchars($_POST["insert_idmg"]);
-            echo "inserting $idmgToInsert ...";
-        }
-        if (!empty($_POST["insert_iac"]))
-        {
-            $iacToInsert = htmlspecialchars($_POST["insert_iac"]);
-            echo "inserting $iacToInsert ...";
-        }
-        if (!empty($_POST["insert_idesc"]))
-        {
-            $idescToInsert = htmlspecialchars($_POST["insert_idesc"]);
-            echo "inserting $idescToInsert ...";
-        }
+                        <div id="ability">
+                            <div id="label-int">INT</div>
+                            <div id="stat-int">10</div>
+                            <div id="mod-int"><img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png"> +0</div>
+                        </div>
 
-        $db = get_pdo_connection();
-        $query = $db->prepare("insert into Equipment (Eqpmnt_Name, Type, Weight, Damage, ACBonus, Description) values (?, ?, ?, ?, ?, ?)");
-        $query->bindParam(1, $inameToInsert, PDO::PARAM_STR);
-        $query->bindParam(2, $itypeToInsert, PDO::PARAM_STR);
-        $query->bindParam(3, $iwgtToInsert, PDO::PARAM_INT);
-        $query->bindParam(4, $idmgToInsert, PDO::PARAM_STR);
-        $query->bindParam(5, $iacToInsert, PDO::PARAM_INT);
-        $query->bindParam(6, $idescToInsert, PDO::PARAM_STR);
-        if ($query->execute())     
-            header( "Location: " . $_SERVER['PHP_SELF']);
-        else 
-            echo "Error inserting: " . $db->errorInfo();
-    }
-?>
+                        <div id="ability">
+                            <div id="label-wis">WIS</div>
+                            <div id="stat-wis">10</div>
+                            <div id="mod-wis"><img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png"> +0</div>
+                        </div>
 
-<h2>Feats</h2>
-<?php
-    $db = get_pdo_connection();
-    $query = $db->prepare("SELECT * FROM Feats");
-    $query->execute();
-    $rows = $query->fetchAll(PDO::FETCH_ASSOC);
-
-    echo makeTable($rows);
-    
-    $insert_form = new PhpFormBuilder();
-    $insert_form->set_att("method", "POST");
-    $insert_form->add_input("Feat Name:", array(
-        "type" => "text"
-    ), "insert_fname");
-    $insert_form->add_input("Feat Level", array(
-        "type" => "number"
-    ), "insert_flvl");
-    $insert_form->add_input("Feat Desc:", array(
-        "type" => "text"
-    ), "insert_fdesc");
-    $insert_form->add_input("Insert", array(
-        "type" => "submit",
-        "value" => "Insert"
-    ), "insertft");
-    $insert_form->build_form();
-
-    if (isset($_POST["insertft"])) 
-    {
-        if (!empty($_POST["insert_fname"]))
-        {
-            $fnameToInsert = htmlspecialchars($_POST["insert_fname"]);
-            echo "inserting $fnameToInsert ...";
-        }
-        if (!empty($_POST["insert_flvl"]))
-        {
-            $flvlToInsert = htmlspecialchars($_POST["insert_flvl"]);
-            echo "inserting $flvlToInsert ...";
-        }
-        if (!empty($_POST["insert_fdesc"]))
-        {
-            $fdescToInsert = htmlspecialchars($_POST["insert_fdesc"]);
-            echo "inserting $fdescToInsert ...";
-        }
-
-        $db = get_pdo_connection();
-        $query = $db->prepare("insert into Feats (Ft_Name, Level, Description) values (?, ?, ?)");
-        $query->bindParam(1, $fnameToInsert, PDO::PARAM_STR);
-        $query->bindParam(2, $flvlToInsert, PDO::PARAM_INT);
-        $query->bindParam(3, $fdescToInsert, PDO::PARAM_STR);
-        if ($query->execute())     
-            header( "Location: " . $_SERVER['PHP_SELF']);
-        else 
-            echo "Error inserting: " . $db->errorInfo();
-    }
-?>
-
-<h2>Languages (gets error, but submits after refresh)</h2> <!-- Gets weird error about headers when submitting, but does submit -->
-<?php
-    $db = get_pdo_connection();
-    $query = $db->prepare("SELECT * FROM Languages");
-    $query->execute();
-    $rows = $query->fetchAll(PDO::FETCH_ASSOC);
-
-    echo makeTable($rows);
-    
-    $insert_form = new PhpFormBuilder();
-    $insert_form->set_att("method", "POST");
-    $insert_form->add_input("Language:", array(
-        "type" => "text"
-    ), "insert_lang");
-    $insert_form->add_input("Insert", array(
-        "type" => "submit",
-        "value" => "Insert"
-    ), "insertlng");
-    $insert_form->build_form();
-
-    if (isset($_POST["insertlng"])) 
-    {
-        if (!empty($_POST["insert_lang"]))
-        {
-            $langToInsert = htmlspecialchars($_POST["insert_lang"]);
-            echo "inserting $langToInsert ...";
-        }
-
-        $db = get_pdo_connection();
-        $query = $db->prepare("insert into Languages (Lang_Name) values (?)");
-        $query->bindParam(1, $langToInsert, PDO::PARAM_STR);
-        if ($query->execute())     
-            header( "Location: " . $_SERVER['PHP_SELF']);
-        else 
-            echo "Error inserting: " . $db->errorInfo();
-    }
-?>
-
-<h2>Spells (does not work)</h2> <!-- broken? not sure what problem is. -->
-<?php
-    $db = get_pdo_connection();
-    $query = $db->prepare("SELECT * FROM Spells");
-    $query->execute();
-    $rows = $query->fetchAll(PDO::FETCH_ASSOC);
-
-    echo makeTable($rows);
-    
-    $insert_form = new PhpFormBuilder();
-    $insert_form->set_att("method", "POST");
-    $insert_form->add_input("Name:", array(
-        "type" => "text"
-    ), "insert_splnm");
-    $insert_form->add_input("Level:", array(
-        "type" => "number"
-    ), "insert_splvl");
-    $insert_form->add_input("School:", array(
-        "type" => "text"
-    ), "insert_spsch");
-    $insert_form->add_input("Range(feet):", array(
-        "type" => "text"
-    ), "insert_spran");
-    $insert_form->add_input("Components(VSM):", array(
-        "type" => "text"
-    ), "insert_spco");
-    $insert_form->add_input("Duration:", array(
-        "type" => "text"
-    ), "insert_spdu");
-    $insert_form->add_input("Attack:", array(
-        "type" => "text"
-    ), "insert_spatk");
-    $insert_form->add_input("Damage(Dice + DMG type):", array(
-        "type" => "text"
-    ), "insert_spdmg");
-    $insert_form->add_input("Description:", array(
-        "type" => "text"
-    ), "insert_spdesc");
-    $insert_form->add_input("Insert:", array(
-        "type" => "submit",
-        "value" => "Insert"
-    ), "insertspll");
-    $insert_form->build_form();
-
-    if (isset($_POST["insertspll"])) 
-    {
-        if (!empty($_POST["insert_splnm"]))
-        {
-            $spnmToInsert = htmlspecialchars($_POST["insert_splnm"]);
-            echo "inserting $spnmToInsert ...";
-        }
-        if (!empty($_POST["insert_splvl"]))
-        {
-            $splvlToInsert = htmlspecialchars($_POST["insert_splvl"]);
-            echo "inserting $splvlToInsert ...";
-        }
-        if (!empty($_POST["insert_spsch"]))
-        {
-            $spschToInsert = htmlspecialchars($_POST["insert_spsch"]);
-            echo "inserting $spschToInsert ...";
-        }
-        if (!empty($_POST["insert_spran"]))
-        {
-            $spranToInsert = htmlspecialchars($_POST["insert_spran"]);
-            echo "inserting $spranToInsert ...";
-        }
-        if (!empty($_POST["insert_spco"]))
-        {
-            $spcoToInsert = htmlspecialchars($_POST["insert_spco"]);
-            echo "inserting $spcoToInsert ...";
-        }
-        if (!empty($_POST["insert_spdu"]))
-        {
-            $spduToInsert = htmlspecialchars($_POST["insert_spdu"]);
-            echo "inserting $spduToInsert ...";
-        }
-        if (!empty($_POST["insert_spatk"]))
-        {
-            $spatkToInsert = htmlspecialchars($_POST["insert_spatk"]);
-            echo "inserting $spatkToInsert ...";
-        }
-        if (!empty($_POST["insert_spdmg"]))
-        {
-            $spdmgToInsert = htmlspecialchars($_POST["insert_spdmg"]);
-            echo "inserting $spdmgToInsert ...";
-        }
-        if (!empty($_POST["insert_spdesc"]))
-        {
-            $spdescToInsert = htmlspecialchars($_POST["insert_spdesc"]);
-            echo "inserting $spdescToInsert ...";
-        }
-
-        $db = get_pdo_connection();
-        $query = $db->prepare("insert into Spells (Spell_Name, Level, School, Spell_Range, Components, Duration, Attack, Damage, Description) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $query->bindParam(1, $spnmToInsert, PDO::PARAM_STR);
-        $query->bindParam(2, $splvlToInsert, PDO::PARAM_INT);
-        $query->bindParam(3, $spschToInsert, PDO::PARAM_STR);
-        $query->bindParam(4, $spranToInsert, PDO::PARAM_STR);
-        $query->bindParam(5, $spcoToInsert, PDO::PARAM_STR);
-        $query->bindParam(6, $spduToInsert, PDO::PARAM_STR);
-        $query->bindParam(7, $spatkToInsert, PDO::PARAM_STR);
-        $query->bindParam(8, $spdmgToInsert, PDO::PARAM_STR);
-        $query->bindParam(9, $spdescToInsert, PDO::PARAM_STR);
-
-        if ($query->execute())     
-            header( "Location: " . $_SERVER['PHP_SELF']);
-        else 
-            echo "Error inserting: " . $db->errorInfo();
-    }
-?>
-
-<h2>Feats</h2>
-<?php
-    $db = get_pdo_connection();
-    $query = $db->prepare("SELECT * FROM Feats");
-    $query->execute();
-    $rows = $query->fetchAll(PDO::FETCH_ASSOC);
-
-    echo makeTable($rows);
-    
-    $insert_form = new PhpFormBuilder();
-    $insert_form->set_att("method", "POST");
-    $insert_form->add_input("Feat Name:", array(
-        "type" => "text"
-    ), "insert_fname");
-    $insert_form->add_input("Feat Level", array(
-        "type" => "number"
-    ), "insert_flvl");
-    $insert_form->add_input("Feat Desc:", array(
-        "type" => "text"
-    ), "insert_fdesc");
-    $insert_form->add_input("Insert", array(
-        "type" => "submit",
-        "value" => "Insert"
-    ), "insertft");
-    $insert_form->build_form();
-
-    if (isset($_POST["insertft"])) 
-    {
-        if (!empty($_POST["insert_fname"]))
-        {
-            $fnameToInsert = htmlspecialchars($_POST["insert_fname"]);
-            echo "inserting $fnameToInsert ...";
-        }
-        if (!empty($_POST["insert_flvl"]))
-        {
-            $flvlToInsert = htmlspecialchars($_POST["insert_flvl"]);
-            echo "inserting $flvlToInsert ...";
-        }
-        if (!empty($_POST["insert_fdesc"]))
-        {
-            $fdescToInsert = htmlspecialchars($_POST["insert_fdesc"]);
-            echo "inserting $fdescToInsert ...";
-        }
-
-        $db = get_pdo_connection();
-        $query = $db->prepare("insert into Feats (Ft_Name, Level, Description) values (?, ?, ?)");
-        $query->bindParam(1, $fnameToInsert, PDO::PARAM_STR);
-        $query->bindParam(2, $flvlToInsert, PDO::PARAM_INT);
-        $query->bindParam(3, $fdescToInsert, PDO::PARAM_STR);
-        if ($query->execute())     
-            header( "Location: " . $_SERVER['PHP_SELF']);
-        else 
-            echo "Error inserting: " . $db->errorInfo();
-    }
-?>
+                        <div id="ability">
+                            <div id="label-cha">CHA</div>
+                            <div id="stat-cha">10</div>
+                            <div id="mod-cha"><img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png"> +0</div>
+                        </div>
+                    </div>
+                    <div id="skills" class="border-outset" style="display:flex;flex-direction: column;">
+                        <div id="acrobatics">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Acrobatics</div>
+                        </div>
+                        <div id="arcana">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Arcana</div>
+                        </div>
+                        <div id="athletics">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Athletics</div>
+                        </div>
+                        <div id="crafting">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Crafting</div>
+                        </div>
+                        <div id="deception">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Deception</div>
+                        </div>
+                        <div id="diplomacy">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Diplomacy</div>
+                        </div>
+                        <div id="intimidation">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Intimidation</div>
+                        </div>
+                        <div id="lore">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Lore</div>
+                        </div>
+                        <div id="medicine">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Medicine</div>
+                        </div>
+                        <div id="nature">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Nature</div>
+                        </div>
+                        <div id="occulitism">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Intimidation</div>
+                        </div>
+                        <div id="performance">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Performance</div>
+                        </div>
+                        <div id="religion">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Religion</div>
+                        </div>
+                        <div id="society">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Society</div>
+                        </div>
+                        <div id="stealth">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Stealth</div>
+                        </div>
+                        <div id="survival">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Survival</div>
+                        </div>
+                        <div id="thievery">
+                            <img src="https://cdn-icons-png.flaticon.com/512/6545/6545894.png">
+                            <div> +0</div>
+                            <div> Thievery</div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        <div id="column-chat" class="border-outset" style="float:right;">
+            <div id="chatlog" class="border-outset chat-box">
+                <?php 
+                    $sql = "SELECT pc_img, pc_name, msg, sent_at FROM chat";
+                    $result = $conn->query($sql);
+                
+                    if ($result->num_rows > 0) {
+                        while($row = $result->fetch_assoc()) {
+                            echo "<div style=\"display:flex\">";
+                                echo "<img src=\"" . $row['pc_img'] . "\" class=\"chat-img\">";
+                                echo "<div style=\"text-align:left;inline-size: 400px;\">";
+                                    echo "<span>" . $row['pc_name'] . ", " . $row['sent_at'] . "</span><br>";
+                                    echo $row['msg'];
+                                echo "</div>";
+                            echo "</div><br>";
+                        }
+                    }
+                ?>
+            </div>
+            <form method="POST">
+                <input type="text" name="chat-msg" required placeholder="Message #global" minlength="1" maxlength="240">
+                <input type="submit" name="chat-send" value="Send">
+            </form>
+        </div>
+    </div>
+        
+</body>
+</html>

@@ -1,0 +1,66 @@
+* { color: white;
+    font-family: Arial;
+    text-align: center;
+}
+
+body {background-color: rgb(54, 57, 64);}
+option {color:black;}
+p {font-size: 16px;}
+span {text-align: left;}
+button {color: black;}
+
+img.rounded {border-radius: 95px;}
+input {color: black;}
+
+.border-flex {
+    border: 4px outset gray;
+    display: inline-flex;
+        flex-wrap: wrap;
+    padding: 4px;
+    gap: 8px;
+}
+.border-outset {
+    border: 4px outset gray;
+    padding: 4px;
+    gap: 8px;
+}
+.chat-img
+{   max-width:32px;
+    max-height:32px;
+    border-radius:50%;
+    margin: 4px;
+}
+
+#ability div img {
+    max-width:16px;
+    max-height:16px;
+}
+#column_chat
+{   display: inline-flex;
+ 
+}
+#image-bio {
+    max-width:400px;
+    max-height:400px;
+}
+#skills div {
+    display: inline-block;
+    display: left;
+    text-align: left;
+}
+#skills div img {
+    max-width:16px;
+    max-height:16px;
+}
+
+
+/*---links---*/
+nav{background-color: rgb(48, 49, 54);
+    width: 150px;
+    margin: auto;
+    font-weight: bold;}
+a{text-align:left;}
+a:link {color:rgb(88, 101, 242);}
+a:visited {color:rgb(118, 119, 124);}
+a:hover {color:rgb(64, 78, 237);}
+a:active {color:blue;}
